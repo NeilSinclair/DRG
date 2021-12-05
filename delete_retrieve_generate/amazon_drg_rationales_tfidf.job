@@ -1,0 +1,26 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=10:ngpus=1
+#PBS -P CSCI1335
+#PBS -q gpu_1
+#PBS -l walltime=04:30:00
+
+echo activating conda
+
+source activate drg_env
+conda activate drg_env
+
+module purge
+module load chpc/python/anaconda/3-2019.10
+module load gcc/7.3.0
+
+#cd /mnt/lustre3p/users/nsinclair/Code/delete_retrieve_generate
+cd ~/lustre/Code/delete_retrieve_generate
+
+pwd
+
+python train.py --config amazon_config_tfidf.json --bleu
+
+cd ~/lustre/Code
+pwd
+
+python ./src/test_eval.py --dataset amazon_tfidf_delete --test_path delete_retrieve_generate/amazon_tfidf_delete_only_70e/preds.69 --classifier_path ./saved_models/amazon_15_classifier.pt --model_type DeleteOnly
